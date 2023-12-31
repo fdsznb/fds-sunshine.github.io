@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="violet">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1.什么是多线程并发编程 并发：并发是指一个时间段内多个任务同时在执行，并且都没有执行结束。 并行：并行是指单位时间内多个任务同时在执行。 并发任务强调在一个时间段内同时执行，而一个时间段由多个单位时间累积而成，所以说并发的多个任务在单位时间内不一定同时在执行。    2.为什么要进行多线程并发编程多核 CPU 时代的到来打破了单核 CPU 对多线程效能的限制。多个 CPU 意味着每个线程可以使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发编程线程基础二">
+<meta property="og:url" content="https://fdsznb.github.io/fds-sunshine.github.io/2023/02/17/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AF%87/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E4%BA%8C/index.html">
+<meta property="og:site_name" content="百香">
+<meta property="og:description" content="1.什么是多线程并发编程 并发：并发是指一个时间段内多个任务同时在执行，并且都没有执行结束。 并行：并行是指单位时间内多个任务同时在执行。 并发任务强调在一个时间段内同时执行，而一个时间段由多个单位时间累积而成，所以说并发的多个任务在单位时间内不一定同时在执行。    2.为什么要进行多线程并发编程多核 CPU 时代的到来打破了单核 CPU 对多线程效能的限制。多个 CPU 意味着每个线程可以使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-17T06:18:17.000Z">
+<meta property="article:modified_time" content="2023-12-31T01:26:30.029Z">
+<meta property="article:author" content="violet">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>并发编程线程基础二 - 百香</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/monokai.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"fdsznb.github.io","root":"/","version":"1.8.14","typing":{"enable":false,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>百香</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="并发编程线程基础二">
+              
+                并发编程线程基础二
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-02-17 14:18" pubdate>
+        2023年2月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      42 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">并发编程线程基础二</h1>
+            
+            <div class="markdown-body">
+              <h3 id="1-什么是多线程并发编程"><a href="#1-什么是多线程并发编程" class="headerlink" title="1.什么是多线程并发编程"></a>1.什么是多线程并发编程</h3><ul>
+<li>并发：并发是指一个时间段内多个任务同时在执行，并且都没有执行结束。</li>
+<li>并行：并行是指单位时间内多个任务同时在执行。<blockquote>
+<p>并发任务强调在一个时间段内同时执行，而一个时间段由多个单位时间累积而成，所以说并发的多个任务在单位时间内不一定同时在执行。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="2-为什么要进行多线程并发编程"><a href="#2-为什么要进行多线程并发编程" class="headerlink" title="2.为什么要进行多线程并发编程"></a>2.为什么要进行多线程并发编程</h3><p>多核 CPU 时代的到来打破了单核 CPU 对多线程效能的限制。多个 CPU 意味着每个线程可以使用自己的 CPU 运行，这减少了线程上下文的开销，但随着对应用系统性能和吞吐量要求的提高，出现了处理海量数据和请求的要求，这些都对高并发编程有着迫切的需求。</p>
+<h3 id="3-Java-中的线程安全问题"><a href="#3-Java-中的线程安全问题" class="headerlink" title="3.Java 中的线程安全问题"></a>3.Java 中的线程安全问题</h3><p>线程安全问题是指当多个线程同时读写一个共享资源并且没有任何同步措施时，导致出现脏数据或者其他不可预见的结果的问题。</p>
+<h3 id="4-Java-中共享变量的内存可见性问题"><a href="#4-Java-中共享变量的内存可见性问题" class="headerlink" title="4.Java 中共享变量的内存可见性问题"></a>4.Java 中共享变量的内存可见性问题</h3><p>Java 内存规模规定，将所有的变量都存放在主内存中，当线程使用变量时，会把主内存里面的变量复制到自己的工作空间或者叫工作内存，线程读写变量时操作的是自己工作内存的变量。</p>
+<blockquote>
+<p>多线程情况下会出现内存不可见问题</p>
+</blockquote>
+<h3 id="5-Java-中的-synchronized-关键字"><a href="#5-Java-中的-synchronized-关键字" class="headerlink" title="5. Java 中的 synchronized 关键字"></a>5. Java 中的 synchronized 关键字</h3><h4 id="5-1-synchronized-关键字介绍"><a href="#5-1-synchronized-关键字介绍" class="headerlink" title="5.1 synchronized 关键字介绍"></a>5.1 synchronized 关键字介绍</h4><p>synchronized 块是 Java 提供的一种原子性内置锁，Java 中的每个对象都可以把它当作一个同步锁来使用，这些 Java 内置的使用者看不到的锁被称为内部锁，也叫作监视器锁。</p>
+<blockquote>
+<p>线程的执行代码进入 synchronized 代码块前会自动获取内部锁，这时候其他线程访问该同步代码块时会被阻塞挂起。拿到内部锁的线程会在正常退出同步代码块或者抛出异常后或者在同步块内调用了该内置锁资源的 wait 系列方法时释放该内置锁(排他锁)。</p>
+</blockquote>
+<blockquote>
+<p>另外，由于 Java 中的线程与操作系统的原生线程一一对应，所以当阻塞一个线城时，需要从用户态切换到内核态执行阻塞操作，这是很耗时的操作，而 synchronized 的使用就会导致上下文切换。</p>
+</blockquote>
+<h4 id="5-2-synchronized-的内存语义"><a href="#5-2-synchronized-的内存语义" class="headerlink" title="5.2 synchronized 的内存语义"></a>5.2 synchronized 的内存语义</h4><p>进入 synchronized 块的语义是把在 synchronized 块内使用到的变量从线程的工作内存中清除，这样在 synchronized 块内使用该变量时就不会从线程的工作内存中获取，而是直接从主内存中获取。退出 synchronized 块的内存语义是把在 synchronized 块内对内存共享变量的修改刷新到主内存。</p>
+<blockquote>
+<p>这也是加锁和释放锁的语义，当获取锁后会清空锁块内本地内存中将会被用到的共享变量，在使用这些共享变量时从内存进行加载，在释放时将本地内存中修改的共享变量刷新到主内存。</p>
+</blockquote>
+<blockquote>
+<p>除可以解决共享变量内存可见性问题外，synchronized 经常被用来实现原子性操作。另外请注意，synchronized 关键字会引起线程上下文切换带来的线程调度开销。</p>
+</blockquote>
+<h3 id="6-Java-中的-volatile-关键字"><a href="#6-Java-中的-volatile-关键字" class="headerlink" title="6.Java 中的 volatile 关键字"></a>6.Java 中的 volatile 关键字</h3><p>volatile关键字可以确保对一个变量的更新对其他线程马上可见，当一个变量被声明为 volatile 时，线程在写入变量时不会把值缓存在寄存器或者其他地方，而是会把值刷新回主内存。</p>
+<blockquote>
+<p>volatile 的内存语义和 synchronized 有相似之处，集体来说就是：当线程写入了 volatile 变量值时就等价于线程退出 synchronized 同步块 (把写入工作内存的变量值同步到主内存)，读取 volatile 变量值时就相当于进入同步块 (先清空本地内存变量值，再从主内存获取最新值)。</p>
+</blockquote>
+<blockquote>
+<p>volatile 虽然提供了可见性保证，但并不保证操作的原子性。</p>
+</blockquote>
+<p>什么时候才使用 volatile 关键字：</p>
+<ul>
+<li>写入变量不依赖变量的当前值时。<blockquote>
+<p>因为如果依赖当前值，将是获取–计算–写入三步操作，这三步操作不是原子性的，而 volitile 不保证原子性。</p>
+</blockquote>
+</li>
+<li>读写变量值时没有加锁。<blockquote>
+<p>因为加锁本身已经保证了内存可见性，这时候不需要把变量声明为 volitile 的。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="7-Java-中的原子性操作"><a href="#7-Java-中的原子性操作" class="headerlink" title="7.Java 中的原子性操作"></a>7.Java 中的原子性操作</h3><p>所谓原子性操作，是指执行一系列操作时，这些操作要么全部执行，要么全部不执行，不存在只执行其中一部分的情况。</p>
+<h3 id="8-Java-中的-CAS-操作"><a href="#8-Java-中的-CAS-操作" class="headerlink" title="8.Java 中的 CAS 操作"></a>8.Java 中的 CAS 操作</h3><p>CAS 即 Compare and Swap，其实是 JDK 提供的非阻塞原子性操作，它通过硬件保证了比较–更新操作的原子性。JDK 里面的 Unsafe 类提供了一系列的 compareAndSwap* 方法，我们以 compareAndSwapLong 方法进行简单介绍。</p>
+<ul>
+<li>boolean compareAndSwapLong(Object obj, long valueOffeset, long expect, long update) 方法：其中四个参数分别是内存位置、对象中的变量的偏移量、变量预期值和新的值。其操作含义是，如果对象 obj 中内存偏移量为 valueOffset 的变量值为 expect，则使用新的值 update 替换旧的值 expect。</li>
+</ul>
+<h3 id="9-Unsafe-类"><a href="#9-Unsafe-类" class="headerlink" title="9.Unsafe 类"></a>9.Unsafe 类</h3><h4 id="9-1-Unsafe-类中的重要方法"><a href="#9-1-Unsafe-类中的重要方法" class="headerlink" title="9.1 Unsafe 类中的重要方法"></a>9.1 Unsafe 类中的重要方法</h4><p>JDK 的 rt.jar 包中的 Unsafe 类提供了硬件级别的原子性操作，Unsafe 类中的方法都是 native 方法，它们使用 JNI 的方式访问本地 C++ 实现库。</p>
+<p>Usafe 提供的几个主要的方法：</p>
+<ul>
+<li><strong>long objectFieldOffset(Field field) 方法：</strong>返回指定的变量在所属类中的内存地址，改偏移地址仅仅在该 Unsafe 函数中访问指定字段时使用。</li>
+<li><strong>int arrayBaseOffset(Class arrayClase) 方法：</strong>获取数组中第一个元素的地址。</li>
+<li><strong>int arrayIndexScale(Class arrayClass) 方法：</strong>获取数组中一个元素占用的字节。</li>
+<li><strong>boolean compareAndSwapLong(Object obj, long offset, long expect, long update) 方法：</strong>比较对象 obj 中偏移量为 offset 的变量的值是否与 expect 相等，相等则使用 update 值更新，然后返回 true，否则返回 false。</li>
+<li><strong>public native long getLongVolatile(Object obj, long offse) 方法：</strong>获取对象 obj 中偏移量为 offset 的变量对应 volatile 语义的值。</li>
+<li><strong>void putLongVolatile(Object obj, long offset, long value) 方法：</strong>设置 obj 对象中 offset 偏移的类型为 long 的 field 的值为 value，支持 volatile 语义。</li>
+<li><strong>void putOrderedLong(Object obj, long offset, long value) 方法：</strong>设置 obj 对象中 offset 偏移地址对应的 long 型 field 的值为 value。这是一个有延迟的方法，并且不保证值修改对其他线程立即可见。只有在变量使用 volatile 修饰并且预计会被意外修改时才使用该方法。</li>
+<li><strong>void park(boolean isAbsolute, long time) 方法：</strong>阻塞当前线程，其中参数 isAbsolute 等于 false 且 time 等于 0 表示一直阻塞。time 大于 0 表示等待指定的 time 后阻塞线程会被唤醒，这个 time 是个相对值，是个增量值，也就是相对当前时间累加 time 后当前线程会被唤醒。如果 isAbsolute 等于 true，并且 time 大于 0，则表示阻塞的线程到指定的时间点后会被唤醒，这里 time 是个绝对时间，是将某个时间点换算为 ms 后的值。另外，当其他线程调用了当前阻塞线程的 interrupt 方法而中断了当前线程时，当前线程也会返回，而其他线程调用了 unPark 方法并且把当前线程作为参数时当前线程也会返回。</li>
+<li><strong>void unpark(Object thread) 方法：</strong>唤醒调用 park 后阻塞的线程。</li>
+</ul>
+<p>下面是 JDK8 新增的函数，这里只列出 Long 类型操作。</p>
+<ul>
+<li><strong>long getAndSetLong(Object obj, long offset, long update) 方法：</strong>获取对象 obj 中偏移量为 offset 的变量 volatile 语义的当前值，并设置变量 volatile 语义的值为 update。</li>
+<li><strong>long getAndAddLong(Object obj, long offset, long addValue) 方法：</strong>获取对象 obj 中偏移量为 offset 的变量 volatile 语义的当前值，并设置变量值为(原始值 + addValue)。</li>
+</ul>
+<h4 id="9-2-如何使用-Unsafe-类"><a href="#9-2-如何使用-Unsafe-类" class="headerlink" title="9.2 如何使用 Unsafe 类"></a>9.2 如何使用 Unsafe 类</h4><figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestUnSafe</span> &#123;<br><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Unsafe unsafe;<br><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> stateOffset;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">volatile</span> <span class="hljs-type">long</span> <span class="hljs-variable">state</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br><br>    <span class="hljs-keyword">static</span> &#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">Field</span> <span class="hljs-variable">field</span> <span class="hljs-operator">=</span> Unsafe.class.getDeclaredField(<span class="hljs-string">&quot;theUnsafe&quot;</span>);<br>            field.setAccessible(<span class="hljs-literal">true</span>);<br>            unsafe = (Unsafe) field.get(<span class="hljs-literal">null</span>);<br><br>            stateOffset = unsafe.objectFieldOffset(TestUnSafe.class.getDeclaredField(<span class="hljs-string">&quot;state&quot;</span>));<br>        &#125; <span class="hljs-keyword">catch</span> (Exception ex) &#123;<br>            System.out.println(ex.getLocalizedMessage());<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(ex);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">TestUnSafe</span> <span class="hljs-variable">testUnSafe</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TestUnSafe</span>();<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">success</span> <span class="hljs-operator">=</span> unsafe.compareAndSwapLong(testUnSafe, stateOffset, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>);<br>        System.out.println(success);<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h3 id="10-锁的概述"><a href="#10-锁的概述" class="headerlink" title="10.锁的概述"></a>10.锁的概述</h3><h4 id="10-1-乐观锁与悲观锁"><a href="#10-1-乐观锁与悲观锁" class="headerlink" title="10.1 乐观锁与悲观锁"></a>10.1 乐观锁与悲观锁</h4><ul>
+<li><p><strong>乐观锁：</strong>悲观锁指对数据被外界修改持不保守态度，认为数据不会被其他线程修改，所以在数据被处理前不会对数据进行加锁，并在整个数据处理过程中，是数据处于非锁定状态</p>
+<blockquote>
+<p>乐观锁并不会使用数据库提供的锁机制，一般在表中添加 version 字段或者使用业务状态来实现。乐观锁直到提交时才锁定，所以不会产生任何死锁。</p>
+</blockquote>
+</li>
+<li><p><strong>悲观锁：</strong>悲观锁指对数据被外界修改持保守态度，认为数据很容易就会被其他线程修改，所以在数据被处理前先对数据进行加锁，并在整个数据处理过程中，是数据处于锁定状态</p>
+<blockquote>
+<p>悲观锁的实现往往依靠数据库提供的锁机制，即在数据库中，在对数据记录操作前给记录加排它锁。</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="10-2-公平锁与非公平锁"><a href="#10-2-公平锁与非公平锁" class="headerlink" title="10.2 公平锁与非公平锁"></a>10.2 公平锁与非公平锁</h4><ul>
+<li><strong>公平锁：</strong>公平锁表示线程获取锁的顺序是按照线程请求锁的时间早晚决定的，也就是最早请求锁的线程将最早获取到锁。</li>
+<li><strong>非公平锁：</strong>在运行时闯入，也就是先来不一定先得。</li>
+</ul>
+<h4 id="10-3-独占锁与共享锁"><a href="#10-3-独占锁与共享锁" class="headerlink" title="10.3 独占锁与共享锁"></a>10.3 独占锁与共享锁</h4><ul>
+<li><strong>独占锁：</strong>独占锁保证任何时候都只有一个线程能得到锁，ReentrantLock 就是以独占方式实现的。<blockquote>
+<p>独占锁是一种悲观锁，由于每次访问资源都先加上互斥锁，这限制了并发性，因为读操作并不会影响数据的一致性，而独占锁只允许在同一时间有一个线程读取数据，其他线程必须等待当前线程释放锁才能进行读取。</p>
+</blockquote>
+</li>
+<li><strong>共享锁：</strong>可以同时由多个线程持有，例如 ReadWriteLock 读写锁，它允许一个资源可以被多线程同时进行读操作。<br>共享锁是一种乐观锁，它放宽了加锁的条件，允许多个线程同时进行读操作。</li>
+</ul>
+<h4 id="10-4-什么是可重入锁"><a href="#10-4-什么是可重入锁" class="headerlink" title="10.4 什么是可重入锁"></a>10.4 什么是可重入锁</h4><p>可重入锁就是当一个线程获取了锁，可以在一定次数内进入被该锁锁住的代码。</p>
+<h4 id="10-5-自旋锁"><a href="#10-5-自旋锁" class="headerlink" title="10.5 自旋锁"></a>10.5 自旋锁</h4><ul>
+<li><strong>自旋锁：</strong>当前线程在获取锁时，如果发现锁已经被其他线程占有，它不马上阻塞自己，在不放弃 CPU 使用权的情况下，多次尝试获取(默认次数是 10，可以使用 -XX：PreBlockSpinsh 参数设置该值)。<blockquote>
+<p>出现自旋锁的原因：由于 Java 中的线程是与操作系统中的线程一一对应的，所以当一个线程在获取锁(比如独占锁)失败后，会被切换到内核状态而被挂起。当该线程获取到锁时又需要将其切换到内核状态而唤醒该线程。而从用户状态切换到内核状态的开销是比较大的，在一定程度上会影响并发性能。</p>
+</blockquote>
+</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0/">多线程学习</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/02/23/acwing/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">基础算法模板</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/15/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AF%87/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E4%B8%80/">
+                        <span class="hidden-mobile">并发编程线程基础一</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="javascript:;" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="javascript:;" rel="nofollow noopener"><span>Violet</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

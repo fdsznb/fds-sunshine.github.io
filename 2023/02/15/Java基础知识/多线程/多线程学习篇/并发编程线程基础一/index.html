@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="violet">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、并发编程线程基础1.什么是进程、线程进程是代码在数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位，线程则是进程的一个执行路径，一个进程至少有一个线程，进程中的多个线程共享进程的资源。  操作系统在分配资源时是把资源分配给进程的，但是 CPU 资源比较特殊，它是分配到线程的，因为真正要占用 CPU 运行的是线程，所以也说线程是 CPU 分配的基本单位。  2.线程创建的三种方式Jav">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发编程线程基础一">
+<meta property="og:url" content="https://fdsznb.github.io/fds-sunshine.github.io/2023/02/15/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AF%87/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E4%B8%80/index.html">
+<meta property="og:site_name" content="百香">
+<meta property="og:description" content="一、并发编程线程基础1.什么是进程、线程进程是代码在数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位，线程则是进程的一个执行路径，一个进程至少有一个线程，进程中的多个线程共享进程的资源。  操作系统在分配资源时是把资源分配给进程的，但是 CPU 资源比较特殊，它是分配到线程的，因为真正要占用 CPU 运行的是线程，所以也说线程是 CPU 分配的基本单位。  2.线程创建的三种方式Jav">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-15T01:15:54.000Z">
+<meta property="article:modified_time" content="2023-12-31T01:26:30.028Z">
+<meta property="article:author" content="violet">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  <title>并发编程线程基础一 - 百香</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/monokai.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"fdsznb.github.io","root":"/","version":"1.8.14","typing":{"enable":false,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>百香</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="并发编程线程基础一">
+              
+                并发编程线程基础一
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-02-15 09:15" pubdate>
+        2023年2月15日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.6k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      30 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">并发编程线程基础一</h1>
+            
+            <div class="markdown-body">
+              <h2 id="一、并发编程线程基础"><a href="#一、并发编程线程基础" class="headerlink" title="一、并发编程线程基础"></a>一、并发编程线程基础</h2><h3 id="1-什么是进程、线程"><a href="#1-什么是进程、线程" class="headerlink" title="1.什么是进程、线程"></a>1.什么是进程、线程</h3><p>进程是代码在数据集合上的一次运行活动，是系统进行资源分配和调度的基本单位，线程则是进程的一个执行路径，一个进程至少有一个线程，进程中的多个线程共享进程的资源。</p>
+<blockquote>
+<p>操作系统在分配资源时是把资源分配给进程的，但是 CPU 资源比较特殊，它是分配到线程的，因为真正要占用 CPU 运行的是线程，所以也说线程是 CPU 分配的基本单位。</p>
+</blockquote>
+<h3 id="2-线程创建的三种方式"><a href="#2-线程创建的三种方式" class="headerlink" title="2.线程创建的三种方式"></a>2.线程创建的三种方式</h3><p>Java 中有线程创建方式，分别为实现 Runnable 接口的 run 方法，继承 Thread 类并重写 run 方法，使用 FutureTask 方式。</p>
+<h4 id="2-1-继承-Thread-类并重写-run-方法"><a href="#2-1-继承-Thread-类并重写-run-方法" class="headerlink" title="2.1 继承 Thread 类并重写 run 方法"></a>2.1 继承 Thread 类并重写 run 方法</h4><figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ExtendThreadDemo</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">MyThread</span> <span class="hljs-variable">myThread</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyThread</span>();<br>        <span class="hljs-comment">/**</span><br><span class="hljs-comment">         * 其实调用 start 方法后线程并没有马上执行而 处于就 状态， 这个就绪状态是指</span><br><span class="hljs-comment">         * 线程已经获取了除 CPU 资源外的其 资源，等待获取 CPU 资源后才会真正处于运行状态。</span><br><span class="hljs-comment">         * 一旦 run 方法执行完毕， 该线程就处于终止状态</span><br><span class="hljs-comment">         */</span><br>        myThread.start();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyThread</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Thread</span>&#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>            System.out.println(<span class="hljs-string">&quot;This a thread&#x27;s run method.&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+
+<h4 id="2-2-实现-Runnable-的-run-方法"><a href="#2-2-实现-Runnable-的-run-方法" class="headerlink" title="2.2 实现 Runnable 的 run 方法"></a>2.2 实现 Runnable 的 run 方法</h4><figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ImplementRunnableThreadDemo</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyThread</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>            System.out.println(<span class="hljs-string">&quot;I&#x27;m a thread run method.&quot;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">MyThread</span> <span class="hljs-variable">myThread</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyThread</span>();<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(myThread).start();<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(myThread).start();<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+<h4 id="2-3-使用-FutureTask-方式"><a href="#2-3-使用-FutureTask-方式" class="headerlink" title="2.3 使用 FutureTask 方式"></a>2.3 使用 FutureTask 方式</h4><figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FutureTaskThreadDemo</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CallerTask</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Callable</span>&lt;String&gt; &#123;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">call</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;violet&quot;</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        FutureTask&lt;String&gt; futureTask = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FutureTask</span>&lt;String&gt;(<span class="hljs-keyword">new</span> <span class="hljs-title class_">CallerTask</span>()); <br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(futureTask).start();<br>        <br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> futureTask.get();<br>            System.out.println(<span class="hljs-string">&quot;线程执行完成返回结果：&quot;</span> + res);<br>        &#125; <span class="hljs-keyword">catch</span>(Exception e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+<h3 id="3-线程通知与等待"><a href="#3-线程通知与等待" class="headerlink" title="3.线程通知与等待"></a>3.线程通知与等待</h3><p>Java 中的 Object 类是所有类的父类，鉴于继承机制， Java 把所有类都需要的方法放到了 Object 类里面，其中就包含线程通知与等待系列函数。</p>
+<h4 id="3-1-wait-函数"><a href="#3-1-wait-函数" class="headerlink" title="3.1 wait() 函数"></a>3.1 wait() 函数</h4><p>当一个线程调用一个共享变量 wait() 方法时, 该调用线程会被阻塞挂起, 到发生下面几件事情之一才返回:</p>
+<ul>
+<li>其他线程调用了该共享对象 notify() 或者 notifyAll() 方法</li>
+<li>其他线程调用了该线程 interrupt() 方法, 该线程抛出 InterruptedException 异常返回。</li>
+</ul>
+<blockquote>
+<p>如果调用 wait()方法的线程没有事先获取该对象的监视器锁，则调用 wait() 方法时调用 线程会抛出 IllegalMonitorStateExce ption 异常。</p>
+</blockquote>
+<h4 id="3-2-notify-函数"><a href="#3-2-notify-函数" class="headerlink" title="3.2 notify() 函数"></a>3.2 notify() 函数</h4><p>唤醒一个在该共享变量上调用 wait 系列方法后被挂起的线程。</p>
+<h4 id="3-3-notifyAll-函数"><a href="#3-3-notifyAll-函数" class="headerlink" title="3.3 notifyAll() 函数"></a>3.3 notifyAll() 函数</h4><p>唤醒所有在该共享变量上由于调用 wait 系列方法而被挂起的线程。</p>
+<h4 id="3-4等待线程执行终止的-join-方法"><a href="#3-4等待线程执行终止的-join-方法" class="headerlink" title="3.4等待线程执行终止的 join 方法"></a>3.4等待线程执行终止的 join 方法</h4><p>在项目实践中经常会遇到一个场景，就是需要等待某几件事情完成后才能继续往下执行，比如多个线程加载资源，需要等待多个线程全部加载完毕再汇总处理。</p>
+<h4 id="3-5-让线程睡眠的-sleep-方法"><a href="#3-5-让线程睡眠的-sleep-方法" class="headerlink" title="3.5 让线程睡眠的 sleep 方法"></a>3.5 让线程睡眠的 sleep 方法</h4><p>当一个执行中的线程调用了 Thread 的 sleep 方法后，调用线程会暂时让出指定时间的执行权，也就是在这期间不参与 CPU 的调度，但是该线程所拥有的监视器资源，比如锁还是持有不让出的。</p>
+<h4 id="3-6-让出-CPU-执行权的-yield-方法"><a href="#3-6-让出-CPU-执行权的-yield-方法" class="headerlink" title="3.6 让出 CPU 执行权的 yield 方法"></a>3.6 让出 CPU 执行权的 yield 方法</h4><p>Thread 有一个静态的 yield 方法，当一个线程调用 yield 方法时，实际就是在暗示线程调度器当前线程请求让出自己 CPU 使用，但是线程调度器可以无条件忽略这个暗示。</p>
+<h4 id="3-7-线程中断"><a href="#3-7-线程中断" class="headerlink" title="3.7 线程中断"></a>3.7 线程中断</h4><p>Java 中的线程中断是一种线程间的协作模式，通过设置线程的中断标志并不能直接终止该线程的执行，而是被中断的线程根据中断状态自行处理。</p>
+<ul>
+<li><strong>void interrupt()</strong>: 中断线程，例如，当线程 A 运行时，线程 B 可以调用线程 A 的 interrupt() 方法来设置线程 A 的中断标志为 true 并立即返回。设置标志仅仅是设置标志，线程 A 实际并没有被中断，它会继续往下执行。如果线程 A 因为调用了 wait 系列函数、join 方法或者 sleep 方法而被阻塞挂起，这时候若线程 B 调用线程 A 的 interrupt() 方法，线程 A 会在调用这些方法的地方抛出 InterruptedException 异常而返回。</li>
+<li><strong>boolean isInterrupted() 方法</strong>: 检测当前线程是否被中断，如果是返回 true, 否则返回 false。  </li>
+<li><strong>boolean interrupted() 方法</strong>: 检测当前线程是否被中断，如果是返回 true，否则返回 false。与 isInterrupted 不同的是，该方法如果发现当前线程被中断，则会清除中断标志，并且该方法是 static 方法，可以通过 Thread 类直接调用。另外从下面给的代码可以知道，在 interrupted() 内部是获取当前调用线程的中断标志而不是调用 interrupted() 方法的实例对象的中断标志。</li>
+</ul>
+<h4 id="3-8-理解线程上下文切换"><a href="#3-8-理解线程上下文切换" class="headerlink" title="3.8 理解线程上下文切换"></a>3.8 理解线程上下文切换</h4><p>当前线程使用完时间片后，就会处于就绪状态并让出 CPU 让其他线程占有，这就是上下文切换。</p>
+<blockquote>
+<p>线程上下文切换时机有：当前线程的 CPU 时间片使用完处于就绪状态时，当前线程被其他线程中断时。</p>
+</blockquote>
+<h4 id="3-9-线程死锁"><a href="#3-9-线程死锁" class="headerlink" title="3.9 线程死锁"></a>3.9 线程死锁</h4><h5 id="3-9-1-什么是线程死锁"><a href="#3-9-1-什么是线程死锁" class="headerlink" title="3.9.1 什么是线程死锁"></a>3.9.1 什么是线程死锁</h5><p>死锁是指两个或两个以上的线程在执行任务过程中，因争夺资源而造成的互相等待的现象。</p>
+<h5 id="3-9-2-死锁产生的必要条件"><a href="#3-9-2-死锁产生的必要条件" class="headerlink" title="3.9.2 死锁产生的必要条件"></a>3.9.2 死锁产生的必要条件</h5><ul>
+<li><p>互斥条件：指线程对已经获取到的资源进行排它性使用，即该资源同时只由一个线程占用。如果此时还有其他线程请求获取该资源，则请求者只能等待，直至占有资源的线程释放该资源。</p>
+</li>
+<li><p>请求并持有条件：指一个线程已经持有了至少一个资源，但又提出了新的资源请求，而新资源已被其他线程占有，所有当前线程会被阻塞，但阻塞的同时并不释放自己已经获取的资源。</p>
+</li>
+<li><p>不可剥夺条件：指线程获取到的资源在自己使用完之前不能被其他线程抢占，只有在自己使用完毕后才由自己释放该资源。</p>
+</li>
+<li><p>环路等待条件：指在发生死锁时，必然存在一个线程–资源的环形链，即线程集合{T0，T1，T2，···，Tn}中的 T0 正在等待一个 T1 占用的资源，T1 正在等待 T2 占用的资源，······Tn 正在等待已被 T0 占用的资源。</p>
+</li>
+</ul>
+<h5 id="3-9-3-如何避免线程死锁"><a href="#3-9-3-如何避免线程死锁" class="headerlink" title="3.9.3 如何避免线程死锁"></a>3.9.3 如何避免线程死锁</h5><p>要想避免死锁，只需要破坏掉至少一个构造死锁的必要条件即可，但是学过操作系统的读者应该都知道，目前只有请求并持有和环路等待条件是可以被破坏的。</p>
+<h4 id="3-10-守护线程与用户线程"><a href="#3-10-守护线程与用户线程" class="headerlink" title="3.10 守护线程与用户线程"></a>3.10 守护线程与用户线程</h4><p>守护线程是为用户线程服务的，当一个程序中的所有用户线程都执行完成之后程序就会结束运行，程序结束运行时不会管守护线程是否正在运行。</p>
+<blockquote>
+<p>即使是守护线程，当程序中调用 join() 方法时，程序依然会等待守护线程执行完成之后再结束进程。</p>
+</blockquote>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li>《Java并发编程之美》</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">Java基础知识</a>
+                    
+                      <a class="hover-with-bg" href="/categories/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0/">多线程学习</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/02/17/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AD%A6%E4%B9%A0%E7%AF%87/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E4%BA%8C/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">并发编程线程基础二</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/14/%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/">
+                        <span class="hidden-mobile">设计原则</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="javascript:;" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="javascript:;" rel="nofollow noopener"><span>Violet</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
